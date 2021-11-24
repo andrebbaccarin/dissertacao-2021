@@ -29,7 +29,6 @@ spark.sql("COMANDO SQL").show()
 # ler tabelas
 
 from pyspark.sql.types import StructType, IntegerType, StringType, LongType, TimestampType
-from time import time
 
 schema_Voos = StructType() \
     .add("id_Voos",LongType(),True) \
@@ -122,62 +121,45 @@ df_rota.show()
 
 # Voos
 
-inicio_voos_csvsql = time()
 df_Voos.write.format('jdbc').options( \
-      url='jdbc:mysql://thunderbird01:3306/testes', \
+      url='jdbc:mysql://thunderbird01:3306/Dados_ANAC', \
       driver='com.mysql.jdbc.Driver', \
-      dbtable='Voos_tempo', \
+      dbtable='Voos', \
       user='hadoop', \
       password='hadoop').mode('overwrite').save()
-fim_voos_csvsql = time()
-tempo_voo_csvsql = fim_voos_csvsql - inicio_voos_csvsql
-tempo_voo_csvsql
 
 # Registros
 
-inicio_registros_csvsql = time()
 df_Registros.write.format('jdbc').options( \
       url='jdbc:mysql://thunderbird01:3306/Dados_ANAC', \
       driver='com.mysql.jdbc.Driver', \
-      dbtable='Registros_tempo_tres', \
+      dbtable='Registros', \
       user='hadoop', \
       password='hadoop').mode('overwrite').save()
-fim_registros_csvsql = time()
-tempo_registros_csvsql = fim_registros_csvsql - inicio_registros_csvsql
-tempo_registros_csvsql
 
 # Missao_Aerea
 
-inicio_missao_csvsql = time()
 df_missao_aerea.write.format('jdbc').options( \
-      url='jdbc:mysql://thunderbird01:3306/dados_FAB_novo', \
+      url='jdbc:mysql://thunderbird01:3306/Dados_FAB', \
       driver='com.mysql.jdbc.Driver', \
-      dbtable='Missao_Aerea_tempo', \
+      dbtable='Missao_Aerea', \
       user='hadoop', \
       password='hadoop').mode('overwrite').save()
-fim_missao_csvsql = time()
-tempo_missao_csvsql = fim_missao_csvsql - inicio_missao_csvsql
-tempo_missao_csvsql
 
 # Rota
 
-inicio_rota_csvsql = time()
 df_rota.write.format('jdbc').options( \
-      url='jdbc:mysql://thunderbird01:3306/dados_FAB_novo', \
+      url='jdbc:mysql://thunderbird01:3306/Dados_FAB', \
       driver='com.mysql.jdbc.Driver', \
-      dbtable='Rota_tempo', \
+      dbtable='Rota', \
       user='hadoop', \
       password='hadoop').mode('overwrite').save()
-fim_rota_csvsql = time()
-tempo_rota_csvsql = fim_rota_csvsql - inicio_rota_csvsql
-tempo_rota_csvsql
 
 ''' PASSAR DO csv PARA O HIVE (Spark)'''
 
 # ler tabelas
 
 from pyspark.sql.types import StructType, IntegerType, StringType, LongType, TimestampType
-from time import time
 
 schema_Voos = StructType() \
     .add("id_Voos",LongType(),True) \
@@ -269,15 +251,11 @@ df_missao_aerea.show()
 df_rota.show()
 
 # Voos
-inicio_voos_csvhive = time()
-df_Voos.write.mode("overwrite").saveAsTable("teste.Voos_tempo")
-fim_voos_csvhive = time()
-tempo_voos_csvhive = fim_voos_csvhive - inicio_voos_csvhive
-tempo_voos_csvhive
+df_Voos.write.mode("overwrite").saveAsTable("Dados_ANAC.Voos")
 
 # Registros
 inicio_registros_csvhive = time()
-df_Registros.write.mode("overwrite").saveAsTable("teste.Registros_tempo")
+df_Registros.write.mode("overwrite").saveAsTable("Dados_ANAC.Registros")
 fim_registros_csvhive = time()
 tempo_registros_csvhive = fim_registros_csvhive - inicio_registros_csvhive
 tempo_registros_csvhive
@@ -285,7 +263,7 @@ tempo_registros_csvhive
 # Missao_Aerea
 
 inicio_missao_csvhive = time()
-df_missao_aerea.write.mode("overwrite").saveAsTable("dados_FAB_novo.Missao_Aerea_tempo")
+df_missao_aerea.write.mode("overwrite").saveAsTable("dados_FAB.Missao_Aerea")
 fim_missao_csvhive = time()
 tempo_missao_csvhive = fim_missao_csvhive - inicio_missao_csvhive
 tempo_missao_csvhive
@@ -293,7 +271,7 @@ tempo_missao_csvhive
 # Rota
 
 inicio_rota_csvhive = time()
-df_rota.write.mode("overwrite").saveAsTable("dados_FAB_novo.Rota_tempo")
+df_rota.write.mode("overwrite").saveAsTable("dados_FAB.Rota")
 fim_rota_csvhive = time()
 tempo_rota_csvhive = fim_rota_csvhive - inicio_rota_csvhive
 tempo_rota_csvhive
@@ -306,12 +284,12 @@ df_Voos = spark.read.format("jdbc"). \
     option("url", "jdbc:mysql://thunderbird02:3306/Dados_ANAC"). \
     option("driver", "com.mysql.jdbc.Driver"). \
     option("dbtable", "Voos"). \
-    option("user", "root").option("password", "t33a").load()
+    option("user", "hadoop").option("password", "hadoop").load()
 df_Voos.printSchema()
 df_Voos.show()
 from time import time
 inicio = time()
-df_Voos.write.mode("overwrite").saveAsTable("teste.Voos_tempo_tres")
+df_Voos.write.mode("overwrite").saveAsTable("Dados_ANAC.Voos")
 fim = time()
 
 # Registros
@@ -333,7 +311,7 @@ df_Missao_Aerea = spark.read.format("jdbc"). \
     option("driver", "com.mysql.jdbc.Driver"). \
     option("dbtable", "Missao_Aerea"). \
     option("user", "hadoop").option("password", "hadoop").load()
-df_Missao_Aerea.write.mode("overwrite").saveAsTable("teste.Missao_Aerea_tempo_catorze")
+df_Missao_Aerea.write.mode("overwrite").saveAsTable("Dados_FAB.Missao_Aerea")
 fim_missao_sqlhive = time()
 tempo_missao_sqlhive = fim_missao_sqlhive - inicio_missao_sqlhive
 tempo_missao_sqlhive
@@ -346,7 +324,7 @@ df_Rota = spark.read.format("jdbc"). \
     option("driver", "com.mysql.jdbc.Driver"). \
     option("dbtable", "Rota"). \
     option("user", "hadoop").option("password", "hadoop").load()
-df_Rota.write.mode("overwrite").saveAsTable("teste.rota_tempo_catorze")
+df_Rota.write.mode("overwrite").saveAsTable("Dados_FAB.Rota")
 fim_rota_sqlhive = time()
 tempo_rota_sqlhive = fim_rota_sqlhive - inicio_rota_sqlhive
 tempo_rota_sqlhive
